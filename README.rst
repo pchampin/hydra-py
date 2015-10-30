@@ -6,9 +6,9 @@ The primary goal is to provide a lib for easily writing Hydra-enabled clients [1
 A secondary goal is to provide a client for Triple Patterns Fragments [2]_,
 and an RDFlib [3] Store backed on any TPF service.
 
-[1] http://www.hydra-cg.com/
-[2] http://www.hydra-cg.com/spec/latest/triple-pattern-fragments/
-[3] https://rdflib.readthedocs.org/
+* [1] http://www.hydra-cg.com/
+* [2] http://www.hydra-cg.com/spec/latest/triple-pattern-fragments/
+* [3] https://rdflib.readthedocs.org/
 
 Installation
 ++++++++++++
