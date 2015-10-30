@@ -25,7 +25,7 @@ print "\nCreating new event"
 add_event = entrypoint.find_suitable_operation(SCHEMA.AddAction, SCHEMA.Event)
 start = datetime.utcnow()
 end = (start + timedelta(0,1))
-resp, body = add_event.perform({
+resp, body = add_event({
   "@context": "http://www.markus-lanthaler.com/hydra/event-api/contexts/Event.jsonld",
   "@type": "Event",
   "name": "Testing hydra-py",
@@ -42,14 +42,14 @@ print evt.identifier
 print "\nUpdating event"
 evt.set(SCHEMA.description, evt.value(SCHEMA.description)+" (updated)")
 update_event = evt.find_suitable_operation(SCHEMA.UpdateAction, SCHEMA.Event)
-resp, body = update_event.perform(evt.graph.default_context)
+resp, body = update_event(evt.graph.default_context)
 if resp.status // 100 != 2:
     print "failed... (%s %s)" % (resp.status, resp.reason)
 else:
     print "succeeded"
     exit()
 print "trying again with ad-hoc JSON"
-resp, body = update_event.perform({
+resp, body = update_event({
   "@context": "http://www.markus-lanthaler.com/hydra/event-api/contexts/Event.jsonld",
   "@type": "Event",
   "@id": unicode(evt.identifier),

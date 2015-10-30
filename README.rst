@@ -51,7 +51,7 @@ and performs it.
 .. code:: python
 
     create_event = res.find_suitable_operation(SCHEMA.AddAction, SCHEMA.Event)
-    resp, body = create_event.perform({
+    resp, body = create_event({
         "@context": "http://schema.org/",
         "@type": "http://schema.org/Event",
         "name": "Halloween",
