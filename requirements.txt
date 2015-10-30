@@ -1,0 +1,4 @@
+rdflib
+rdflib-jsonld
+uritemplate
+httplib2
