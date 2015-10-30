@@ -1,9 +1,9 @@
 Hydra library for Python
 ========================
 
-The primary goal is to provide a lib for easily writing Hydra-enabled clients [1].
+The primary goal is to provide a lib for easily writing Hydra-enabled clients [1]_.
 
-A secondary goal is to provide a client for Triple Patterns Fragments [2],
+A secondary goal is to provide a client for Triple Patterns Fragments [2]_,
 and an RDFlib [3] Store backed on any TPF service.
 
 [1] http://www.hydra-cg.com/
@@ -63,3 +63,22 @@ and performs it.
     new_event = Resource.from_iri(resp['location'])
 
 And you can go on with the new event you just created...
+
+Triple Pattern Fragments
+++++++++++++++++++++++++
+
+The ``hydra.tpf`` module implements of Triple Pattern Fragments specification [2]_.
+In particular, it provides an implementation of Store,
+so that TPF services can be used transparently:
+
+.. code:: python
+
+    import hydra.tpf # ensures that the TPFStore plugin is registered
+    from rdflib import Graph
+
+    g = Graph('TPFStore')
+    g.open('http://data.linkeddatafragments.org/dbpedia2014')
+
+    g.query("SELECT DISTINCT ?cls { [ a ?cls ] } LIMIT 10")
+
+Note however that this is experimental at the moment...

@@ -13,6 +13,28 @@ LOG = logging.getLogger(__name__)
 
 VOID = Namespace('http://rdfs.org/ns/void#')
 
+class TriplePatternFragment(Collection):
+
+    def iter_triples(self):
+        for p in self.pages:
+            for triple in p.graph.default_context:
+                yield triple
+    triples = property(iter_triples)
+
+    def get_triple_count(self):
+        return self.graph \
+            .value(self.identifier, VOID.triples, default=NULL).toPython()
+    triple_count = property(get_triple_count)
+
+    def get_dataset(self, headers=None, http=None):
+        graph = self.graph
+        for candidate in graph.subjects(VOID.subset, self.identifier):
+            if (candidate, HYDRA.search, None) in graph:
+                return TPFAwareCollection(graph, candidate)
+        return None
+    dataset = property(get_dataset)
+
+
 class TPFAwareCollection(Collection):
 
     triple_search = None
@@ -34,30 +56,10 @@ class TPFAwareCollection(Collection):
         return self.get_tpf(subject, predicate, object).iter_triples()
 
 
-class TriplePatternFragment(Collection):
-
-    def iter_triples(self):
-        for p in self.pages:
-            for triple in p.graph.default_context:
-                yield triple
-    triples = property(iter_triples)
-
-    def get_triple_count(self):
-        return self.graph \
-            .value(self.identifier, VOID.triples, default=NULL).toPython()
-    triple_count = property(get_triple_count)
-
-    def get_dataset(self, headers, http):
-        dataset_id = self.graph.value(None, VOID.subset, self.identifier, any=False)
-        return TPFAwareCollection(self.graph, dataset_id)
-    dataset = property(get_dataset)
-
-
 class TPFStore(Store):
 
-    def open(self, dataset_iri, create=False):
-        self.dataset_iri = dataset_iri
-        self.collec = TPFAwareCollection.from_iri(dataset_iri)
+    def open(self, start_iri, create=False):
+        self.collec = TriplePatternFragment.from_iri(start_iri).dataset
 
     def add(self, (subject, predicate, object), context, quoted=False):
         raise NotImplemented("TPFStore is readonly")

@@ -3,13 +3,13 @@ Use TPFStore and performs a SPARQL query on top of it.
 Note that this is very (very!) slow as soon as the query becomes slightly complex... :-/
 """
 import logging
-from rdflib import Graph, RDF
+from rdflib import Graph
 import sys
 logging.basicConfig(level=logging.INFO)
 
 import hydra.tpf # required to register TPFStore plugin
 
-URL = 'http://data.linkeddatafragments.org/dbpedia2014#dataset'
+URL = 'http://data.linkeddatafragments.org/dbpedia2014'
 if len(sys.argv) > 1:
     URL = sys.argv[1]
 
