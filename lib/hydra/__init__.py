@@ -7,6 +7,7 @@ from rdflib.parser import StringInputSource
 from rdflib.plugin import register, Parser, Serializer
 from re import compile as regex
 from uritemplate import expand
+from warnings import warn
 
 register('application/ld+json', Parser, 'rdflib_jsonld.parser', 'JsonLDParser')
 register('application/ld+json', Serializer, 'rdflib_jsonld.serializer', 'JsonLDSerializer')
@@ -228,7 +229,7 @@ class ApiDocumentation(Resource):
 
 
 class Class(Resource):
-    
+
     def iter_supported_properties(self, headers=None, http=None):
         for obj in self.graph.objects(self.identifier, HYDRA.supportedProperty):
             yield SupportedProperty.from_peer(obj, self, headers, http)
@@ -347,19 +348,19 @@ class SupportedProperty(Resource):
         return self.graph \
             .value(self.identifier, HYDRA.readable, default=NULL).toPython()
     readable = _py_property(get_readable)
-    
+
     def get_writeable(self):
         return self.graph \
             .value(self.identifier, HYDRA.writeable, default=NULL).toPython()
     writeable = _py_property(get_writeable)
-    
+
     # those seem to be deprecated from the spec, but are still used in the spec
-    
+
     def get_readonly(self):
         return self.graph \
             .value(self.identifier, HYDRA.readonly, default=NULL).toPython()
     readonly = _py_property(get_readonly)
-    
+
     def get_writeonly(self):
         return self.graph \
             .value(self.identifier, HYDRA.writeonly, default=NULL).toPython()
@@ -402,42 +403,82 @@ class Collection(Resource):
     items_per_page = _py_property(get_items_per_page)
 
     def get_first_page(self, headers=None, http=None):
+        warn("get_first_page/first_page is deprecated; "
+             "use get_first/first instead", stacklevel=2)
         obj = self.graph.value(self.identifier, HYDRA.firstPage)
         if obj:
             return Collection.from_iri(obj, headers, http)
         else:
-            return None        
+            return None
     first_page = _py_property(get_first_page)
 
+    def get_first(self, headers=None, http=None):
+        obj = self.graph.value(self.identifier, HYDRA.first)
+        if obj:
+            return Collection.from_iri(obj, headers, http)
+        else:
+            return None
+    first = _py_property(get_first)
+
     def get_last_page(self, headers=None, http=None):
+        warn("get_last_page/last_page is deprecated; "
+             "use get_last/last instead", stacklevel=2)
         obj = self.graph.value(self.identifier, HYDRA.lastPage)
         if obj:
             return Collection.from_iri(obj, headers, http)
         else:
-            return None        
+            return None
     last_page = _py_property(get_last_page)
 
+    def get_last(self, headers=None, http=None):
+        obj = self.graph.value(self.identifier, HYDRA.last)
+        if obj:
+            return Collection.from_iri(obj, headers, http)
+        else:
+            return None
+    last = _py_property(get_last)
+
     def get_next_page(self, headers=None, http=None):
+        warn("get_next_page/next_page is deprecated; "
+             "use get_next/next instead", stacklevel=2)
         obj = self.graph.value(self.identifier, HYDRA.nextPage)
         if obj:
             return Collection.from_iri(obj, headers, http)
         else:
-            return None        
+            return None
     next_page = _py_property(get_next_page)
 
+    def get_next(self, headers=None, http=None):
+        obj = self.graph.value(self.identifier, HYDRA.next)
+        if obj:
+            return Collection.from_iri(obj, headers, http)
+        else:
+            return None
+    next = _py_property(get_next)
+
     def get_previous_page(self, headers=None, http=None):
+        warn("get_previous_page/previous_page is deprecated; "
+             "use get_previous/previous instead", stacklevel=2)
         obj = self.graph.value(self.identifier, HYDRA.previousPage)
         if obj:
             return Collection.from_iri(obj, headers, http)
         else:
-            return None        
+            return None
     previous_page = _py_property(get_previous_page)
+
+    def get_previous(self, headers=None, http=None):
+        obj = self.graph.value(self.identifier, HYDRA.previous)
+        if obj:
+            return Collection.from_iri(obj, headers, http)
+        else:
+            return None
+    previous = _py_property(get_previous)
 
     def iter_pages(self):
         i = self
         while i is not None:
             yield i
-            i = i.next_page
+            i = i.next
     pages = property(iter_pages)
 
 
@@ -514,7 +555,7 @@ class IriTemplate(Resource):
         return data, None
 
 
-    
+
 def _format_variable(term, mode):
     if mode == 0: # Basic
         return unicode(term)
@@ -528,7 +569,7 @@ def _format_variable(term, mode):
             return ret.encode('utf-8')
         else:
             return unicode(term).encode('utf-8')
-        
+
 
 class IriTemplateMapping(Resource):
 
