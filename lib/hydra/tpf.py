@@ -69,9 +69,16 @@ class TPFStore(Store):
 
     def triples(self, triple_pattern, context=None):
         for triple in self.collec.iter_triples(*triple_pattern):
-            yield triple, context
+            if _triple_match(triple_pattern, triple):
+                yield triple, context
 
     def __len__(self, context=None):
         return self.collec.get_tpf().triple_count
+
+def _node_match(template_node, node):
+    return 1 if (template_node is None  or  template_node == node) else 0
+
+def _triple_match(template_triple, triple):
+    return sum(map(_node_match, template_triple, triple)) == 3
 
 register("TPFStore", Store, "hydra.tpf", "TPFStore")
