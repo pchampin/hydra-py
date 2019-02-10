@@ -75,6 +75,18 @@ class TPFStore(Store):
     def __len__(self, context=None):
         return self.collec.get_tpf().triple_count
 
+    def bind(self, prefix, namespace):
+        self.collec.graph.bind(prefix, namespace)
+
+    def namespace(self, prefix):
+        return self.collec.graph.store.namespace(prefix)
+
+    def prefix(self, namespace):
+        return self.collec.graph.store.prefix(namespace)
+
+    def namespaces(self):
+        return self.collec.graph.namespaces()
+
 def _node_match(template_node, node):
     return 1 if (template_node is None  or  template_node == node) else 0
 
